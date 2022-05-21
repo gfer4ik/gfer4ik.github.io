@@ -23,21 +23,21 @@ int main(int argc,char* argv[])
  setlocale(LC_ALL,"Rus");
  char filename[50];
  int menu;
- puts("Имя создаваемого/открываемого файла");
+ puts("File name");
  gets (filename);
  FILE *f;
  if ((f=fopen(filename,"ab"))==NULL)
- perror ("Ошибка создания/открытия файла");
+ perror ("Create error");
  fclose(f);
  do
  {
  system("CLS");
- puts ("1. Добавление записи");
- puts ("2. Редактирование записи");
- puts ("3. Просмотр записей");
- puts ("4. Поиск");
- puts ("5. Удаление записи");
- puts ("6. Выход");
+ puts ("1. Add note");
+ puts ("2. Edit note");
+ puts ("3. View note");
+ puts ("4. Search");
+ puts ("5. Remove note");
+ puts ("6. Exit");
  scanf ("%d%*c",&menu);
  switch (menu)
  {
@@ -51,37 +51,37 @@ int main(int argc,char* argv[])
  while (menu!=6);
  return 0;
 }
-struct collection input_toy (void)//ввод структуры
+struct collection input_toy (void)
 {
  struct collection toy;
- puts ("Название");
+ puts ("Name");
  gets(toy.name);
- puts ("Стоимость");
+ puts ("Cost");
  while((scanf("%f",&toy.cost)==0)||toy.cost<0);
  {
  fflush(stdin);
  }
- puts ("Количество");
+ puts ("Quantity");
  scanf("%d",&toy.quantity);
- puts ("Возрастные границы от");
+ puts ("Up");
  while((scanf("%d", &toy.age1 )==0)||toy.age1<0)
  {
- printf("Ошибка ввода,введите число заново\n");
+ printf("Error\n");
  fflush(stdin);
- puts ("Возрастные границы от");
+ puts ("To");
  }
- puts ("Возрастные границы до");
+ puts ("To");
  while((scanf("%d", &toy.age2 )==0)||toy.age2<0)
  {
- printf("Ошибка ввода,введите число заново\n");
+ printf("Error\n");
  fflush(stdin);
- puts ("Возрастные границы до");
+ puts ("To");
  }
  return toy;
 }
-void print1 (struct collection data) //вывод одной структуры на экран
+void print1 (struct collection data)
 {
- printf ("Название : %s\nСтоимость : %f\nКоличество : %d\nВозрастные границы от : %d\nВозрастные границы до :%d\n",data.name,data.cost,data.quantity,data.age1,data.age2);
+ printf ("Name : %s\nCost : %f\nQuantity : %d\nUp : %d\nTo :%d\n",data.name,data.cost,data.quantity,data.age1,data.age2);
 }
 void add(char* file)//добавление одной структуры в файл
 {
@@ -91,7 +91,7 @@ void add(char* file)//добавление одной структуры в файл
  system ("CLS");
  if ((f=fopen(file,"ab"))==NULL)
  {
- perror ("Ошибка открытия файла");
+ perror ("Error file open");
  getchar();
  return;
  }
@@ -99,7 +99,7 @@ void add(char* file)//добавление одной структуры в файл
  fwrite(&toy, sizeof(toy),1,f);
  fclose(f);
 }
-void edit (char* file)//функция редактирования файла
+void edit (char* file)
 {
  setlocale(LC_ALL,"Rus");
  FILE *f;
@@ -110,15 +110,15 @@ void edit (char* file)//функция редактирования файла
  system("CLS");
  if ((f=fopen (file,"rb+"))==NULL)
  {
- perror ("Ошибка открытия файла"); getchar();
+ perror ("Error file open"); getchar();
  return;
  }
- printf("Имя: "); gets(name);
+ printf("Name: "); gets(name);
  while (fread(&toy,sizeof(toy),1,f))
  if (!strcmp(toy.name,name))
  {
  print1(toy);
- puts ("Редактировать?(y/n)");
+ puts ("Edit?(y/n)");
  do
  {
  yes = getchar(); getchar();
@@ -126,21 +126,21 @@ void edit (char* file)//функция редактирования файла
  while (yes!='y' && yes!='Y' && yes !='n' && yes!='N');
  if (yes=='y' || yes=='Y')
  {
- toy = input_toy();//вводим запись
- fseek(f,-sizeof(toy),SEEK_CUR);//перемещаемся к нужной структуре
+ toy = input_toy();
+ fseek(f,-sizeof(toy),SEEK_CUR);
  fwrite(&toy,sizeof(toy),1,f);
  fseek(f,0,SEEK_CUR);
  }
  }
- puts ("Поиск завершен"); getchar();
+ puts ("Search completed"); getchar();
  fclose(f);
 }
-void show (char* file)//функция, показывающая все структуры в файле
+void show (char* file)
 {
  setlocale(LC_ALL,"Rus");
  FILE *f;
  struct collection toy;
- char menu,name[30]="Товар не найден";
+ char menu,name[30]="Name not found";
  int k=0,i,n=0,age1=0,age2=0,kol=0;
  float Cost=0;
  long len;
@@ -148,11 +148,11 @@ void show (char* file)//функция, показывающая все структуры в файле
  system("CLS");
  if((f=fopen(file,"rb"))==NULL)
  {
- perror("Ошибка открытия файла");
+ perror("Error file open");
  getchar();
  return;
  }
- puts("| № | Название | Стоимость | Количество | Возрастные границы |");
+ puts("| № | Name | Cost | Quantity | Up/to |");
  puts("----------------------------------------------------------------------------------------------------");
  while (fread(&toy,sizeof(toy),1,f)==1){
  n=0;
@@ -178,11 +178,11 @@ break;
  printf("|%4d|%24s|%20.2f|%22d| от %3d до %3d|\n",++k,toy.name,toy.cost,toy.quantity,toy.age1,toy.age2);
  }
  puts("----------------------------------------------------------------------------------------------------");
- printf("Сведения о самом дорогом конструкторе\nНазвание:%s\nЦена:%.2f\nКоличество:%d\nВозрастные границы:от %d до %d",name,Cost,kol,age1,age2);
+ printf("Сведения о самом дорогом конструкторе\nName:%s\nCost:%.2f\nQuantity:%d\nUp: %d To %d",name,Cost,kol,age1,age2);
  fclose (f);
  getchar();
 }
-void search (char* file)//поиск нужной структуры по заданным параметрам
+void search (char* file)
 {
  setlocale(LC_ALL,"Rus");
  FILE *f;
@@ -193,12 +193,12 @@ void search (char* file)//поиск нужной структуры по заданным параметрам
  system("CLS");
  if((f=fopen(file,"rb"))==NULL)
  {
- perror("Ошибка открытия файла"); getchar();
+ perror("Error file open"); getchar();
  return;
  }
- puts("Стоимость?"); scanf("%d",&Cost);
- puts("Возрастные границы игрушки?"); scanf("%d",&Age1);
- puts("| Название | Стоимость | Количество | Возрастные границы |");
+ puts("Cost?"); scanf("%d",&Cost);
+ puts("Up/To?"); scanf("%d",&Age1);
+ puts("| Name | Cost | Quantity | Up/To |");
  puts("-----------------------------------------------------------------------------------------------");
  while (fread(&toy,sizeof(toy),1,f)==1){
  if ( toy.cost <=Cost && (toy.age1<=Age1 && toy.age2>=Age1))
@@ -207,11 +207,11 @@ void search (char* file)//поиск нужной структуры по заданным параметрам
  flag++;
  }
  }
- if (flag == 0) puts ("Подходящих игрушек нет");
+ if (flag == 0) puts ("---");
  fclose(f);
  getchar();getchar();
 }
-void del(char*file)// функция удаления структуры
+void del(char*file)
 {
  setlocale(LC_ALL,"Rus");
  FILE *f1, *f2;
@@ -222,29 +222,29 @@ void del(char*file)// функция удаления структуры
  system ("CLS");
  if ((f1=fopen(file,"r"))==NULL)
  {
- perror("Ошибка открытия файла"); getchar();
+ perror("Error file open"); getchar();
  return;
  }
  fseek(f1,0,SEEK_END);
  n_file = ftell(f1) / sizeof(toy);
  if (n_file == 0)
  {
- puts("Файл пуст"); getchar();
+ puts("File clear"); getchar();
  return;
  }
- puts("Введите Название удаляемой записи?");
+ puts("Enter Название удаляемой записи?");
  scanf("%s",&name);
- puts("Введите стоимость удаляемой записи?");
+ puts("Enter стоимость удаляемой записи?");
  scanf("%f",&cost);
- puts("Введите количество удаляемой записи?");
+ puts("Enter количество удаляемой записи?");
  scanf("%u",&quantity);
- puts ("Введите возрастные границы удаляемой записи?");
+ puts ("Enter возрастные границы удаляемой записи?");
  scanf("%u",&age1);
  scanf("%u",&age2);
  rewind(f1);
  if((f2=fopen("temp.dat","wb"))==NULL)
  {
- perror("Ошибка открытия файла");
+ perror("Error file open");
  getchar();
  return;
  }
@@ -266,9 +266,9 @@ void del(char*file)// функция удаления структуры
  }
  }
  if (i!=j)
- puts("Запись удалена");
+ puts("Note removed");
  else
- puts("Записи с такими данными не существует");
+ puts("Note not exist");
  fclose(f1);
  fclose(f2);
  remove(file);
